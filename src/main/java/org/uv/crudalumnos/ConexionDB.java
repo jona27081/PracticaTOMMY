@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author zarcorp
+ * @author equipo2
  */
 public class ConexionDB {
 
