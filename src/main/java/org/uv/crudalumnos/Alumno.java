@@ -6,7 +6,7 @@ package org.uv.crudalumnos;
 
 /**
  *
- * @author zarcorp
+ * @author equipo2
  */
 public class Alumno {
     private int id;
