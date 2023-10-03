@@ -4,7 +4,7 @@
 <%-- 
     Document   : index
     Created on : 29 sep. 2023, 2:35:31 a. m.
-    Author     : zarcorp
+    Author     : Equipo2
 --%>
 
 <%
