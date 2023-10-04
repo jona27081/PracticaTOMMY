@@ -11,8 +11,8 @@
 <%
 // Verificar si el usuario ha iniciado sesión (puedes mantener esta parte si la usas)
     if (session.getAttribute("usuario") == null) {
-      response.sendRedirect("index.jsp"); // Redireccionar al usuario a la página de inicio de sesión si no ha iniciado sesión
-    return;
+        response.sendRedirect("index.jsp"); // Redireccionar al usuario a la página de inicio de sesión si no ha iniciado sesión
+        return;
     }
 
     String action = request.getParameter("action");
@@ -27,6 +27,7 @@
 
     if ("insert".equals(action)) {
         // Obtener los valores del formulario
+        int id = Integer.parseInt(request.getParameter("id"));
         String nombre = request.getParameter("nombre");
         String direccion = request.getParameter("direccion");
         String telefono = request.getParameter("telefono");
@@ -34,6 +35,7 @@
 
         // Crear un objeto Alumno con los datos del formulario
         Alumno alumno = new Alumno();
+        alumno.setId(id);
         alumno.setNombre(nombre);
         alumno.setDireccion(direccion);
         alumno.setTelefono(telefono);
@@ -75,7 +77,6 @@
         response.sendRedirect(request.getRequestURI());
 
     }
-
 %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -92,7 +93,7 @@
                     <h1>Alta Alumnos Formulario</h1>
                     <form method="post" action="crud.jsp">
                         <input type="hidden" name="action" value="<%= (alumnoEdit != null) ? "update" : "insert"%>">
-                        <input type="hidden" name="id" value="<%= (alumnoEdit != null) ? alumnoEdit.getId() : ""%>">
+                        <input type="<%= (alumnoEdit != null) ? "hidden" : "number"%>" class="form-control" name="id" value="<%= (alumnoEdit != null) ? alumnoEdit.getId() : ""%>" placeholder="Id" required>
                         <input type="text" class="form-control" name="nombre" value="<%= (alumnoEdit != null) ? alumnoEdit.getNombre() : ""%>" placeholder="Nombre" required>
                         <input type="text" class="form-control" name="direccion" value="<%= (alumnoEdit != null) ? alumnoEdit.getDireccion() : ""%>" placeholder="Dirección" required>
                         <input type="text" class="form-control" name="telefono" value="<%= (alumnoEdit != null) ? alumnoEdit.getTelefono() : ""%>" placeholder="Teléfono" required>
@@ -115,7 +116,7 @@
                             <% for (Alumno alumno : alumnos) {%>
                             <tr>
                                 <td>
-                                    <a href="index.jsp?action=edit&id=<%= alumno.getId()%>"><%= alumno.getId()%></a>                                    
+                                    <a href="crud.jsp?action=edit&id=<%= alumno.getId()%>"><%= alumno.getId()%></a>                                    
                                 </td>
                                 <td>
                                     <%= alumno.getNombre()%>
@@ -144,10 +145,11 @@
             </<div>
                 </body>
                 <script>
+
                     function confirmDelete(id) {
                         if (confirm("¿Estás seguro de que deseas eliminar este alumno?")) {
                             // Si el usuario confirma la eliminación, redirige a la página de eliminación
-                            window.location.href = "index.jsp?action=delete&id=" + id;
+                            window.location.href = "crud.jsp?action=delete&id=" + id;
                         }
                     }
                 </script>
