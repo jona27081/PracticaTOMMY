@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 
 /**
  *
@@ -20,41 +21,52 @@ import java.util.logging.Logger;
 public class ConexionDB {
 
     private static ConexionDB cx = null;
+    private DataSource dataSource;
 
-    public static ConexionDB getInstance() {
+    private ConexionDB() {
+        try {
+            javax.naming.Context ctx = new javax.naming.InitialContext();
+            dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/CrudAlumnos");
+        } catch (javax.naming.NamingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método para obtener la instancia del Singleton
+    public static synchronized ConexionDB getInstance() {
         if (cx == null) {
             cx = new ConexionDB();
         }
         return cx;
     }
 
-    private Connection con = null;
-
-    private ConexionDB() {
-        Properties props = new Properties();
-        try (InputStream in = getClass().getResourceAsStream("/config.properties")) {
-            props.load(in);
-        } catch (IOException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String url = props.getProperty("db.url");
-        String user = props.getProperty("db.username");
-        String password = props.getProperty("db.password");
-        
-        try {
-            // Cargamos el controlador JDBC
-            Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
+    // Método para obtener una conexión del DataSource
+    public Connection getConnection() throws SQLException {
+        if (dataSource != null) {
+            return dataSource.getConnection();
+        } else {
+            throw new SQLException("El DataSource no está configurado.");
         }
     }
 
     public boolean execute() {
-        return true;
+        // Realiza tus operaciones de base de datos utilizando la conexión obtenida del DataSource
+        try ( Connection con = getConnection()) {
+            // Ejecuta tus operaciones aquí
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean execute(TransactionDB tbd) {
-        return tbd.execute(con);
+        // Realiza tus operaciones de base de datos utilizando la conexión obtenida del DataSource
+        try ( Connection con = getConnection()) {
+            return tbd.execute(con);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
